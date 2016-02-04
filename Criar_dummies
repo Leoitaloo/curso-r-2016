@@ -1,0 +1,58 @@
+library(ggplot2)
+library(magrittr)
+library(dplyr)
+library(readr)
+
+
+dados <- read.csv("C:\\Users\\LeonardoItalo\\Downloads\\reggeofusion.csv", sep = ";", header = T, dec = ",")
+
+dados <- tbl_df(dados)
+
+dados %>% 
+  ggplot(aes(Populacao_D1, Receita))
+
+attach(dados)
+
+reg <- lm(Receita ~ Populacao_D1)
+summary(reg)
+
+dados2 <- dados %>% 
+  select(Loja, Receita, Itens)
+
+for(i in 5:7) {
+  dados2 %>% 
+    mutate(dummy = as.numeric(Loja == 3 | Receita > 28000000))
+}
+
+
+f1 <- function(d) {
+  as.numeric(d$Loja == 3 | d$Receita > 28000000)
+}
+
+f2 <- function(d) {
+  as.numeric(d$Loja == 4 | d$Receita > 28000000)
+}
+
+f_n <- function(i) {
+  function(d) {
+    as.numeric(d$Loja == i | d$Receita > 28000000)
+  }
+}
+
+
+1:10 %>% 
+  lapply(f_n) %>% 
+  lapply(function(x) x(dados2)) %>% 
+  as.data.frame() %>% 
+  setNames(paste0('dummy', 1:length(.))) %>% 
+  bind_cols(dados2)
+
+
+for(i in 1:10) {
+  print(sprintf('lalala_%d_%s', i, 'texto')  )
+}
+
+
+sink("C:\\Users\\LeonardoItalo\\Downloads\\Modelo[i].txt")
+summary(reg[i])
+sink()

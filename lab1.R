@@ -1,0 +1,47 @@
+moeda <- function(p){
+  y=c()
+  x <- runif(1)
+  if(p>x){
+    y = 1
+  }else{
+    y = 0
+  }
+  return(y)
+}
+moeda(0.5)
+
+moedas <- function(n,p){
+  z=c()
+  for(i in 1:n){
+  x <- runif(1)
+  if(p>x){
+    z[i]=1
+  }else{
+    z[i]=0
+  }
+  }
+  return(z)
+}
+moedas(5,0.5)
+
+proporcao <- function(resultados)
+{
+  x <- table(resultados)
+  x <- x[names(x)==1]/length(resultados)
+  return(x)
+}
+proporcao(c(1,1,1,0,1,0,0,1,0,1))
+
+simulacao <- function(k,n,p){
+  y=c()
+  for(i in 1:k){
+  x <- moedas(n,p)
+  y[i] <- proporcao(x)
+  }
+  return(y)
+}
+simulacao(5,10,0.5)
+
+hist(simulacao(10,10,0.5))
+hist(simulacao(100,10,0.5))
+hist(simulacao(1000,10,0.5))

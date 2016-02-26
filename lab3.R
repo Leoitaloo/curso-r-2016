@@ -49,7 +49,7 @@ flights %>%
 
 flights %>% 
   group_by(month) %>% 
-  summarise(statistics = summary(air_time))
+  summarise(statistics = mean(air_time, na.rm = T))
 
 #Arrange
 
@@ -62,14 +62,24 @@ flights %>%
 #Spread
 
 flights %>%
-  group_by(month) %>% 
-  summarise(dep_delay_month = mean(dep_delay, na.rm = TRUE))
-  
-  
-  
+  group_by(month, day) %>% 
+  summarise(dep_delay_month = mean(dep_delay, na.rm = TRUE)) %>% 
+  spread(month, dep_delay_month)
 
+flights %>%
+  group_by(day, hour) %>% 
+  summarise(dep_delay_day = mean(dep_delay, na.rm = TRUE)) %>% 
+  spread(day, dep_delay_day)
+  
 #Gather
 
+flights %>%
+  group_by(month, day) %>% 
+  summarise(dep_delay_month = mean(dep_delay, na.rm = TRUE)) %>% 
+  gather(day, dep_delay_month)
+  
+  
+  
 
   
 

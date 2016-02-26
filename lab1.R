@@ -45,3 +45,4 @@ simulacao(5,10,0.5)
 hist(simulacao(10,10,0.5))
 hist(simulacao(100,10,0.5))
 hist(simulacao(1000,10,0.5))
+

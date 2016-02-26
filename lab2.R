@@ -8,6 +8,8 @@ install.packages("openxlsx")
 library(openxlsx)
 install.packages("readxl")
 library(readxl)
+install.packages("httr")
+library(httr)
 
 #Parte1
 
@@ -39,44 +41,65 @@ library(readxl)
  
  #Arquivo linux.csv
  pnud_linux_csv <- read.table(arq4, sep = ",", header = T, dec = ".")
- pnud_linux_csv %>% tbl_df %>% summary()
+ pnud_linux_csv[,1:10] %>% tbl_df %>% summary()
  pnud_linux_csv$mulh0a4[6514]
  
  #Arquivo linux.txt com problema na linha 6514
- pnud_linux_txt <- read.table(arq5)
- pnud_linux_txt %>% tbl_df %>% summary()
+ pnud_linux_txt <- read.table(arq5, header = T)
+ pnud_linux_txt[,1:10] %>% tbl_df %>% summary()
  pnud_linux_txt$mulh0a4[6514]
  
  #Arquivo linux.xlsx
  pnud_linux_xlsx <- read.xlsx(arq6)
- pnud_linux_xlsx %>% tbl_df %>% summary()
+ pnud_linux_xlsx[,1:10] %>% tbl_df %>% summary()
  pnud_linux_xlsx$mulh0a4[6514]
  
  #Arquivo win.csv
  pnud_win_csv <- read.table(arq7, sep = ",", header = T, dec = ".")
- pnud_win_csv %>% tbl_df %>% summary()
+ pnud_win_csv[,1:10] %>% tbl_df %>% summary()
  pnud_win_csv$mulh0a4[6514]
  
  #Arquivo win.txt com problema na linha 6514
  pnud_win_txt <- read_delim(arq8, " ")
- pnud_win_txt %>% tbl_df %>% summary()
+ pnud_win_txt[,1:10] %>% tbl_df %>% summary()
  pnud_win_txt$mulh0a4[6514]
  
  #Arquivo win.xlsx
  pnud_win_xlsx <- read_excel(arq9)
- pnud_win_xlsx %>% tbl_df %>% summary()
+ pnud_win_xlsx[,1:10] %>% tbl_df %>% summary()
  pnud_win_xlsx$mulh0a4[6514]
  
  #Arquivo linux2.csv com problema na linha 6514
  pnud2_linux_csv <- read_csv2(arq10)
- pnud2_linux_csv %>% tbl_df %>% summary()
+ pnud2_linux_csv[,1:10] %>% tbl_df %>% summary()
  pnud2_linux_csv$mulh0a4[6514]
  
- #Arquivo win2.csv com problema na linha 6514
- pnud2_win_csv <- read_delim(arq11, ";" )
- pnud2_win_csv %>% tbl_df %>% summary()
+ #Arquivo win2.csv
+ pnud2_win_csv <- read.table(arq11, sep = ";", header = TRUE, dec = "," )
+ pnud2_win_csv[,1:10] %>% tbl_df %>% summary()
  pnud2_win_csv$mulh0a4[6514]
  
 #Parte2
  
+ link_pnud <- 'https://www.dropbox.com/s/seqctcl46qeemgu/pnud_simplificado.rds?dl=1'
+ tmp <- tempfile()
+ httr::GET(link_pnud, httr::write_disk(tmp))
+ pnud <- readRDS(tmp)
+ file.remove(tmp) 
+ 
+ pnud %>% 
+   filter(ano == 2010) %>% 
+   select(idhm) %>% 
+   arrange(desc(idhm)) 
+ 
+ pnud %>% 
+   group_by(ufn) %>% 
+   filter(ano == 2000) %>% 
+   summarise(espvidamed = sum(espvida*pesotot)/sum(pesotot))
+ 
+ pnud %>% 
+   filter(ano == 2010 | ano == 1991) %>% 
+   mutate(mean_gini = mean(gini), stddev_gini = sd(gini)) %>% 
+   filter (gini, gini > mean_gini + 2*stddev_gini | gini < mean_gini - 2*stddev_gini) %>% 
+   select(municipio, gini)
  

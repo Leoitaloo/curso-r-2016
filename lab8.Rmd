@@ -1,0 +1,74 @@
+---
+title: "lab8"
+author: "Leonardo Italo de Oliveira"
+date: "25 de fevereiro de 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(shiny)
+library(ggplot2)
+
+# Define UI for application that draws a histogram
+ui <- shinyUI(fluidPage(
+   
+   # Application title
+   titlePanel("Ajuste Modelo"),
+   
+   # Sidebar with a slider input for number of bins 
+   sidebarLayout(
+      sidebarPanel(
+           wellPanel(
+             selectInput("resposta", label = h3("V1"), 
+                         choices = list("Choice 1" = diamonds$price, "Choice 2" = diamonds$carat, "Choice 3" = diamonds$z), 
+                         selected = 1),
+             
+             hr(),
+             fluidRow(column(3, verbatimTextOutput("value")))),
+           
+           wellPanel(
+             selectInput("resposta", label = h3("V2"), 
+                         choices = list("Choice 1" = diamonds$price, "Choice 2" = diamonds$carat, "Choice 3" = diamonds$z), 
+                         selected = 2)
+             
+         )
+      ),
+      mainPanel(
+         fluidRow(
+           plotOutput('reta_ajustada')
+         )
+      )
+   )
+)
+)
+
+
+server <- shinyServer(function(input, output) {
+  
+  ajustar_modelo <- function(y, x){
+    form <- as.formula(paste(y, x, sep='~'))
+    modelo <- lm(form, data = diamonds)
+    return(modelo)
+  }
+    
+    output$reta_ajustada <- renderPlot({
+      
+      # definição das variáveis 
+      y <- input$resposta
+      x <- input$x
+      
+      ggplot(diamonds, aes(x = x, y = y)) + geom_line()
+      
+      
+      # faça um gráfico da variável resposta pela variável selecionada para o eixo X
+      # inclua a reta de regressão ajustada.
+      
+    })
+})
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+
+```
+
